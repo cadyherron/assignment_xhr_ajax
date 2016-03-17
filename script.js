@@ -33,70 +33,6 @@
 // xhr.send();
 
 
-// THIS IS WHAT THE FUNCTION CALL WILL LOOK LIKE:
-// $.ajax( {
-//   // The URL (path) for the request
-//   // The below would submit to http://www.yoursite.com/post
-//   url: "post",
-//   // the data to send (will be converted to a query string)
-//   // note that this is an object
-//   data: {
-//       id: 123
-//   },
-//   // HTTP verb (aka "Type" of request)
-//   type: "GET",
-//   // the type of data we expect back
-//   dataType : "json",
-//   // Success callback to run if the request succeeds.
-//   // The response is passed to the function
-//   // as a variable, usually called `data` or `json`
-//   success: function( json ) {
-//       // for example, build a post object onto the body
-//       $( "<h1/>" ).text( json.title ).appendTo( "body" );
-//       $( "<div class=\"content\"/>").html( json.html ).appendTo( "body" );
-//   },
-//   // Error callback to run if the request fails
-//   // (e.g. server returns an error code like 301)
-//   // The raw request and any status codes are 
-//   // passed to the callback
-//   error: function( xhr, status, errorThrown ) {
-//       alert( "Sorry, there was a problem!" );
-//       console.log( "Error: " + errorThrown );
-//       console.log( "Status: " + status );
-//       console.dir( xhr );
-//   },
-//   // Complete callback to run regardless of the outcome
-//   complete: function( xhr, status ) {
-//       alert( "The request is complete!" );
-//   }
-// });
-
-
-// test call:
-// $.ajax( {
-//   url: " http://jsonplaceholder.typicode.com/users",
-//   data: {
-//       id: 200
-//   },
-//   type: "GET",
-//   dataType : "json",
-//   async: true,
-//   success: function( json ) {
-//     alert("Successful call!");
-//   },
-//   error: function( xhr, status, errorThrown ) {
-//       alert( "Sorry, there was a problem!" );
-//       console.log( "Error: " + errorThrown );
-//       console.log( "Status: " + status );
-//       console.dir( xhr );
-//   },
-//   complete: function( xhr, status ) {
-//       alert( "The request is complete!" );
-//   }
-// });
-
-
-
 var $ = (function() {
 
   var opt, postData;
@@ -104,15 +40,13 @@ var $ = (function() {
 
 
   var ajax = function(options) {
-    console.log("ajax options: " + options)
     setOptions(options);
     setEvents();
     makeURL();
     console.log(opt.url)
-    console.log(opt.type)
-    xhr.open(opt.type, opt.url, opt.async) // open
-    setHeaders(); // add headers
-    xhr.send(); // send
+    xhr.open(opt.type, opt.url, opt.async)
+    setHeaders();
+    xhr.send();
     return xhr;
   }
 
@@ -155,8 +89,10 @@ var $ = (function() {
       for (var key in opt.data) {
         opt.url = opt.url + "/" + opt.data[key]
       }
-    } else {
+    } else { // handle POST
+      for (var key in opt.data) {
 
+      }
     }
   };
 
@@ -168,14 +104,18 @@ var $ = (function() {
   }
 
 
+  var post = function(options) {
+    var opt = options
+    opt.type = "POST"
+    ajax(opt)
+  }
 
 
   return {
     ajax: ajax,
-    get: get
+    get: get,
+    post: post
   }
-
-
 
 })();
 
@@ -209,6 +149,18 @@ var testGetSad = {
   data: {
       id: 200
   },  
+  success: function( json ) {
+    alert("Successful call!");
+  }
+}
+
+
+var testPostHappy = {
+  url: "http://jsonplaceholder.typicode.com/users",
+  data: {
+      name: "paul rudd",
+      movies: ["I Love You Man", "Role Models"]
+  },
   success: function( json ) {
     alert("Successful call!");
   }
