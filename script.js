@@ -1,64 +1,34 @@
-// var xhr = new XMLHttpRequest();
-// xhr.addEventListener( "load", function(){
-//     console.log( this.responseText );
-// });
-// xhr.open("GET", "http://jsonplaceholder.typicode.com/users", true);
-// xhr.send();
-
-
-// // Create a post
-// var xhr = new XMLHttpRequest();
-// xhr.addEventListener( "load", function(){
-//     console.log( this.responseText );
-// });
-// xhr.open("POST", "http://jsonplaceholder.typicode.com/posts", true);
-// xhr.send("title=Foo&body=Bar&userId=1");
-
-
-// // Create a valid get
-// var xhr = new XMLHttpRequest();
-// xhr.addEventListener( "load", function(){
-//     console.log( this.responseText );
-// });
-// xhr.open("GET", "http://jsonplaceholder.typicode.com/users/1", true);
-// xhr.send();
-
-
-// // Create an invalid user get
-// var xhr = new XMLHttpRequest();
-// xhr.addEventListener( "load", function(){
-//     console.log( this.responseText );
-// });
-// xhr.open("GET", "http://jsonplaceholder.typicode.com/users/1", true);
-// xhr.send();
-
-
 var $ = (function() {
 
   var opt, postData;
   var xhr = new XMLHttpRequest;
 
-
   var ajax = function(options) {
     setOptions(options);
     setEvents();
     makeURL();
-    console.log(opt.url)
     xhr.open(opt.type, opt.url, opt.async)
     setHeaders();
-    xhr.send();
+    send();
     return xhr;
   }
 
+  var send = function() {
+    if (opt.type === "POST") {
+      xhr.send(postData)
+    } else if (opt.type === "GET") {
+      xhr.send()
+    }
+  }
 
   var setOptions = function(options) {
     opt = options;
+    opt.async = opt.async || true;
     // don't create errors if these are missing: 
     opt.error = opt.error || function() {};
     opt.success = opt.success || function() {};
     opt.complete = opt.complete || function() {};
   }
-
 
   var setEvents = function() {
     xhr.addEventListener("load", function() {
@@ -76,26 +46,28 @@ var $ = (function() {
     })
   }
 
-
   var setHeaders = function() {
     for (var key in opt.headers) {
       xhr.setRequestHeader(key, opt.headers[key])
     }
+    if (opt.type === "POST") {
+      xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    }
   }
 
-
   var makeURL = function() {
-    if (opt.type === "GET") {
-      for (var key in opt.data) {
-        opt.url = opt.url + "/" + opt.data[key]
-      }
-    } else { // handle POST
-      for (var key in opt.data) {
-
-      }
+    opt.url += "/"
+    var data = [];
+    for (var key in opt.data) {
+        data.push(encodeURIComponent(key) + "=" + encodeURIComponent(opt.data[key]))
     }
-  };
-
+    if (opt.type === "GET") {
+      opt.url += ("?" + data.join("&"))
+    } 
+    else if (opt.type === "POST") {
+      postData = data.join("&")
+    }
+  }
 
   var get = function(options) {
     var opt = options
@@ -103,13 +75,11 @@ var $ = (function() {
     ajax(opt)
   }
 
-
   var post = function(options) {
     var opt = options
     opt.type = "POST"
     ajax(opt)
   }
-
 
   return {
     ajax: ajax,
@@ -150,7 +120,7 @@ var testGetSad = {
       id: 200
   },  
   success: function( json ) {
-    alert("Successful call!");
+    alert("Successful call! " + json);
   }
 }
 
@@ -159,9 +129,47 @@ var testPostHappy = {
   url: "http://jsonplaceholder.typicode.com/users",
   data: {
       name: "paul rudd",
-      movies: ["I Love You Man", "Role Models"]
+      movies: "I Love You Man"
   },
   success: function( json ) {
-    alert("Successful call!");
+    alert("Successful call!  " + json);
   }
 }
+
+
+
+// var xhr = new XMLHttpRequest();
+// xhr.addEventListener( "load", function(){
+//     console.log( this.responseText );
+// });
+// xhr.open("GET", "http://jsonplaceholder.typicode.com/users", true);
+// xhr.send();
+
+
+// // Create a post
+// var xhr = new XMLHttpRequest();
+// xhr.addEventListener( "load", function(){
+//     console.log( this.responseText );
+// });
+// xhr.open("POST", "http://jsonplaceholder.typicode.com/posts", true);
+// xhr.send("title=Foo&body=Bar&userId=1");
+
+
+// // Create a valid get
+// var xhr = new XMLHttpRequest();
+// xhr.addEventListener( "load", function(){
+//     console.log( this.responseText );
+// });
+// xhr.open("GET", "http://jsonplaceholder.typicode.com/users/1", true);
+// xhr.send();
+
+
+// // Create an invalid user get
+// var xhr = new XMLHttpRequest();
+// xhr.addEventListener( "load", function(){
+//     console.log( this.responseText );
+// });
+// xhr.open("GET", "http://jsonplaceholder.typicode.com/users/1", true);
+// xhr.send();
+
+
