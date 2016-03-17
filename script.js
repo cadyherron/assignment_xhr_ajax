@@ -104,13 +104,16 @@ var $ = (function() {
 
 
   var ajax = function(options) {
+    console.log("ajax options: " + options)
     setOptions(options);
     setEvents();
     makeURL();
+    console.log(opt.url)
+    console.log(opt.type)
     xhr.open(opt.type, opt.url, opt.async) // open
     setHeaders(); // add headers
-    xhr.send() // send
-    parseResponse();
+    xhr.send(); // send
+    return xhr;
   }
 
 
@@ -142,7 +145,7 @@ var $ = (function() {
 
   var setHeaders = function() {
     for (var key in opt.headers) {
-      xhr.setRequestHeader(key, opt.headers[k])
+      xhr.setRequestHeader(key, opt.headers[key])
     }
   }
 
@@ -158,19 +161,10 @@ var $ = (function() {
   };
 
 
-  var parseResponse = function(callback) {
-    callback(console.log(xhr.response))
-  }
-
-
-  var get = function() {
+  var get = function(options) {
+    var opt = options
     opt.type = "GET"
-    ajax({
-      url: url,
-      data: data,
-      success: success,
-      dataType: dataType
-    })
+    ajax(opt)
   }
 
 
@@ -178,9 +172,44 @@ var $ = (function() {
 
   return {
     ajax: ajax,
-
+    get: get
   }
 
 
 
 })();
+
+
+var testAjaxHappy = {
+  url: " http://jsonplaceholder.typicode.com/users",
+  data: {
+      id: 1
+  },
+  type: "GET",
+  dataType : "json",
+  async: true,
+  headers: {"foo": 1, "bar": "bar"},
+  success: function( json ) {
+    alert("Successful call!");
+  },
+  error: function( xhr, status, errorThrown ) {
+      alert( "Sorry, there was a problem!" );
+      console.log( "Error: " + errorThrown );
+      console.log( "Status: " + status );
+      console.dir( xhr );
+  },
+  complete: function( xhr, status ) {
+      alert( "The request is complete!" );
+  }
+}
+
+
+var testGetSad = {
+  url: "http://jsonplaceholder.typicode.com/users",
+  data: {
+      id: 200
+  },  
+  success: function( json ) {
+    alert("Successful call!");
+  }
+}
